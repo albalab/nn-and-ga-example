@@ -8,7 +8,7 @@ export default {
   target: 'static',
 
   router: {
-    base: '/<repository-name>/',
+    base: '/nn-and-ga-example/',
   },
 
   // Global page headers: https://go.nuxtjs.dev/config-head
