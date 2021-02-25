@@ -115,7 +115,7 @@ export default {
     valid: true,
     inputNodes: 3,
     inputNodesHint: '',
-    hiddenNodes: 12,
+    hiddenNodes: 24,
     outputNodes: 12,
     outputNodesHint:
       "Predefined value that cannot be changed, 12 colors are supported: ['Black','Blue','Brown','Cyan','Green','Grey','Orange','Pink','Purple','Red','White','Yellow']",

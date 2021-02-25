@@ -102,9 +102,9 @@ export default {
   data: () => ({
     valid: true,
     phraseToGuess: 'Some random phrase',
-    populationSize: 2000,
+    populationSize: 4000,
     population: [],
-    mutationRate: 0.01,
+    mutationRate: 0.1,
     pow: 99,
     generating: false,
     guessing: false,
