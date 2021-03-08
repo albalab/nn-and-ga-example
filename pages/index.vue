@@ -9,7 +9,7 @@
     <v-tabs-items v-model="tab">
       <v-tab-item v-for="(item, index) in items" :key="index">
         <NN v-if="index === 0" />
-        <Genethic v-if="index === 1" />
+        <Genetic v-if="index === 1" />
       </v-tab-item>
     </v-tabs-items>
   </v-card>
@@ -17,19 +17,19 @@
 
 <script>
 import NN from '~/components/nn/index.vue'
-import Genethic from '~/components/genethic/index.vue'
+import Genetic from '~/components/genetic/index.vue'
 
 export default {
   components: {
     NN,
-    Genethic,
+    Genetic,
   },
   data() {
     return {
       tab: null,
       items: [
         'Neural network color classifier',
-        'Genethic algorithm phrase guess',
+        'Genetic algorithm phrase guess',
       ],
     }
   },

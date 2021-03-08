@@ -78,7 +78,7 @@
           !GA.population.length ||
           (GA && GA.bestWord === GA.phraseToGuess)
         "
-        @click="guessing ? pause() : guessPhrase()"
+        @click="guessing ? pause() : guessPhrase(true)"
       >
         {{
           guessing
@@ -88,6 +88,17 @@
             : 'Guess phrase'
         }}
       </v-btn>
+      <v-btn
+        class="success"
+        :disabled="
+          !GA.population ||
+          !GA.population.length ||
+          (GA && GA.bestWord === GA.phraseToGuess)
+        "
+        @click="guessPhrase()"
+      >
+        Guess without visualization
+      </v-btn>
       <v-btn @click="resetToRecommendedValues">
         Reset to recommended values
       </v-btn>
@@ -96,7 +107,7 @@
 </template>
 
 <script>
-import GenethicAlgorithm from '~/lib/genethic/index.js'
+import GeneticAlgorithm from '~/lib/genetic/index.js'
 
 export default {
   data: () => ({
@@ -132,7 +143,7 @@ export default {
     generatePopulation() {
       this.generating = true
       setTimeout(() => {
-        this.GA = new GenethicAlgorithm(
+        this.GA = new GeneticAlgorithm(
           this.phraseToGuess,
           this.populationSize,
           this.mutationRate,
@@ -143,10 +154,10 @@ export default {
         this.generating = false
       }, 200)
     },
-    guessPhrase() {
+    guessPhrase(timeout) {
       this.GA.paused = false
       this.guessing = true
-      this.GA.startGuessing()
+      this.GA.startGuessing(timeout)
     },
     pause() {
       this.GA.paused = true

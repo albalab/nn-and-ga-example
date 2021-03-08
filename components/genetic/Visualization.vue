@@ -15,11 +15,11 @@
       </p>
       <p>
         <span class="font-weight-bold">Average fitness level:</span>
-        {{ ga.averageFitnessRate }}
+        {{ parse(ga.averageFitnessRate) }}
       </p>
       <p>
         <span class="font-weight-bold">Best fitness level:</span>
-        {{ ga.bestFitnessRate }}
+        {{ parse(ga.bestFitnessRate) }}
       </p>
     </v-container>
     <v-simple-table fixed-header height="600px">
@@ -35,7 +35,7 @@
             <td :class="p.randomPhrase === ga.phraseToGuess ? 'primary' : null">
               {{ p.randomPhrase }}
             </td>
-            <td>{{ p.fitnessRate }}</td>
+            <td>{{ parse(p.fitnessLevel) }}</td>
           </tr>
         </tbody>
       </template>
@@ -49,6 +49,11 @@ export default {
     ga: {
       type: Object,
       required: true,
+    },
+  },
+  methods: {
+    parse(n) {
+      return n ? parseFloat(n.toFixed(5)) : n
     },
   },
 }

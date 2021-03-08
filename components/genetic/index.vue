@@ -6,8 +6,8 @@
 </template>
 
 <script>
-import Settings from '~/components/genethic/Settings.vue'
-import Visualization from '~/components/genethic/Visualization.vue'
+import Settings from '~/components/genetic/Settings.vue'
+import Visualization from '~/components/genetic/Visualization.vue'
 export default {
   components: {
     Settings,
