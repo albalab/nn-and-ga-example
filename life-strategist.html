@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Life Strategist — прототип личного помощника</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f5f7fb;
+      --card: #ffffffdd;
+      --accent: #2563eb;
+      --accent-soft: rgba(37, 99, 235, 0.12);
+      --text: #0f172a;
+      --muted: #64748b;
+      --shadow: 0 25px 45px rgba(15, 23, 42, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top, rgba(37, 99, 235, 0.08), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(15, 23, 42, 0.05), transparent 45%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+      padding-bottom: 5rem;
+    }
+
+    header {
+      padding: 3.5rem clamp(1rem, 5vw, 6rem);
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 3.6rem);
+      letter-spacing: -0.03em;
+    }
+
+    header p {
+      margin: 1rem auto 0;
+      max-width: 720px;
+      color: var(--muted);
+      font-size: 1.1rem;
+    }
+
+    main {
+      display: grid;
+      gap: clamp(1.5rem, 2vw, 2.5rem);
+      padding: 0 clamp(1rem, 5vw, 6rem);
+    }
+
+    section {
+      background: var(--card);
+      border-radius: 24px;
+      padding: clamp(1.75rem, 3vw, 2.75rem);
+      backdrop-filter: blur(18px);
+      box-shadow: var(--shadow);
+    }
+
+    h2 {
+      margin-top: 0;
+      font-size: 1.55rem;
+    }
+
+    h3 {
+      margin-top: 1.6rem;
+      margin-bottom: 0.7rem;
+      font-size: 1.1rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    p.lead {
+      margin-top: -0.5rem;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    .grid {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    @media (min-width: 960px) {
+      .grid.two {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    .card {
+      padding: 1.5rem;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+    }
+
+    label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+      font-weight: 600;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="datetime-local"],
+    textarea {
+      width: 100%;
+      padding: 0.75rem 0.9rem;
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(255, 255, 255, 0.9);
+      font-size: 1rem;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    input[type="range"] {
+      width: 100%;
+    }
+
+    .range-row {
+      display: grid;
+      gap: 0.35rem;
+      margin-bottom: 1rem;
+    }
+
+    button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 16px;
+      padding: 0.85rem 1.6rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.2s ease;
+      box-shadow: 0 15px 35px rgba(37, 99, 235, 0.35);
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 18px 45px rgba(37, 99, 235, 0.4);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1.25rem;
+      font-size: 0.95rem;
+    }
+
+    th,
+    td {
+      padding: 0.75rem 0.6rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.3);
+      vertical-align: top;
+    }
+
+    th {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.8rem;
+      padding: 0.35rem 0.6rem;
+      border-radius: 999px;
+      background: rgba(37, 99, 235, 0.12);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .insight {
+      padding: 0.75rem 1rem;
+      border-radius: 14px;
+      background: rgba(37, 99, 235, 0.1);
+      color: #0f172a;
+      margin-top: 1rem;
+      font-size: 0.95rem;
+    }
+
+    .timer-display {
+      font-size: 2.4rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-align: center;
+      margin: 1rem 0;
+    }
+
+    .pill {
+      display: inline-flex;
+      padding: 0.35rem 0.75rem;
+      border-radius: 999px;
+      background: rgba(148, 163, 184, 0.18);
+      color: var(--muted);
+      font-size: 0.8rem;
+      margin-right: 0.4rem;
+    }
+
+    ul.quick-start {
+      padding-left: 1.2rem;
+      color: var(--muted);
+    }
+
+    ul.quick-start li {
+      margin-bottom: 0.45rem;
+    }
+
+    footer {
+      text-align: center;
+      padding: 4rem 1rem 2rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Life Strategist</h1>
+    <p>
+      Интерактивный прототип «разумного компаса», который объединяет лучшие практики когнитивных наук,
+      теории ограничений и поведенческой психологии, чтобы помочь человеку быстро определить контекст,
+      выбрать оптимальное действие и заботиться о себе в динамике дня.
+    </p>
+  </header>
+
+  <main>
+    <section>
+      <h2>Ритуал входа: диагностика состояния</h2>
+      <p class="lead">Оценка энергии, настроения и внимания формирует персональные рекомендации.</p>
+      <div class="grid two">
+        <div class="card">
+          <h3>Ваши метрики</h3>
+          <div class="range-row">
+            <label for="energy">Энергия <span id="energyValue">5</span></label>
+            <input type="range" id="energy" min="1" max="10" value="5" />
+          </div>
+          <div class="range-row">
+            <label for="mood">Настроение <span id="moodValue">5</span></label>
+            <input type="range" id="mood" min="1" max="10" value="5" />
+          </div>
+          <div class="range-row">
+            <label for="focus">Фокус <span id="focusValue">5</span></label>
+            <input type="range" id="focus" min="1" max="10" value="5" />
+          </div>
+          <button id="refreshState">Обновить рекомендации</button>
+        </div>
+        <div class="card">
+          <h3>Совет «режим дня»</h3>
+          <div id="stateRecommendation" class="insight">
+            Отметьте текущее состояние, чтобы получить подсказки по ритму работы и восстановлению.
+          </div>
+          <h3>Протокол восстановления</h3>
+          <div id="recoveryPlan" class="insight">
+            После оценки состояния здесь появится подборка конкретных действий на 5, 15 и 30 минут.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Конструктор ценностных задач</h2>
+      <p class="lead">Сфокусируйтесь на том, что одновременно важно, срочно и даёт энергию.</p>
+      <form id="taskForm" class="grid two">
+        <div class="card">
+          <label>Название задачи
+            <input type="text" id="taskName" placeholder="Например, подготовить стратегию" required />
+          </label>
+          <label>Конечный результат
+            <textarea id="taskOutcome" rows="3" placeholder="Как поймёте, что задача завершена?" required></textarea>
+          </label>
+          <label>Дедлайн (необязательно)
+            <input type="datetime-local" id="taskDeadline" />
+          </label>
+        </div>
+        <div class="card">
+          <label>Влияние / ценность
+            <input type="range" id="impact" min="1" max="10" value="7" />
+          </label>
+          <label>Срочность
+            <input type="range" id="urgency" min="1" max="10" value="6" />
+          </label>
+          <label>Затраты энергии (ниже = легче)
+            <input type="range" id="effort" min="1" max="10" value="4" />
+          </label>
+          <label>Интерес / радость
+            <input type="range" id="joy" min="1" max="10" value="5" />
+          </label>
+          <button type="submit">Добавить задачу и рассчитать приоритет</button>
+        </div>
+      </form>
+      <div class="insight" id="portfolioAdvice">
+        Добавьте хотя бы одну задачу, чтобы увидеть стратегию выполнения.
+      </div>
+      <table id="taskTable" aria-live="polite">
+        <thead>
+          <tr>
+            <th>Задача</th>
+            <th>Суть результата</th>
+            <th>Дедлайн</th>
+            <th>Приоритет</th>
+            <th>Рекомендация</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Фокус-цикл</h2>
+      <p class="lead">Выберите длительность цикла, а ассистент подскажет, как завершить и восстановиться.</p>
+      <div class="grid two">
+        <div class="card">
+          <label>Длительность (минуты)
+            <input type="number" id="timerMinutes" min="1" max="120" value="25" />
+          </label>
+          <button id="startTimer" type="button">Запустить цикл</button>
+          <div class="timer-display" id="timerDisplay">25:00</div>
+          <button id="stopTimer" type="button">Сбросить</button>
+        </div>
+        <div class="card">
+          <h3>Ритуал завершения</h3>
+          <div id="timerGuidance" class="insight">
+            Как только запустите таймер, появится сценарий «закрытия цикла» по модели GTD и протоколу Ричи.
+          </div>
+          <h3>Пульс качества</h3>
+          <div id="qualityPulse" class="insight">
+            Прогресс в задачах + короткая рефлексия помогают формировать мышление роста.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Рефлексия и инерция развития</h2>
+      <div class="grid two">
+        <div class="card">
+          <h3>Ответьте себе</h3>
+          <ul>
+            <li>Что я сделал(а) для ключевой цели сегодня?</li>
+            <li>Где нужна помощь или эскалация?</li>
+            <li>Что подарит мне чувство завершённости?</li>
+          </ul>
+          <textarea id="reflection" rows="5" placeholder="Коротко зафиксируйте мысли..."></textarea>
+          <div class="pill">Совет: завершите день тремя благодарностями.</div>
+        </div>
+        <div class="card">
+          <h3>Шаблон делегирования</h3>
+          <p class="lead">Используйте формулу «ситуация → ожидание → границы → поддержка».</p>
+          <textarea id="delegation" rows="5" placeholder="Ситуация: ...
+Ожидание: ...
+Границы: ...
+Поддержка: ..."></textarea>
+          <div class="pill">Нажмите Ctrl+S, чтобы сохранить копию страницы для себя.</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Быстрый старт</h2>
+      <ul class="quick-start">
+        <li><strong>1.</strong> Зафиксируйте состояние и примите решение: глубокая работа или восстановление.</li>
+        <li><strong>2.</strong> Заполните 3–5 задач — увидите объективный рейтинг по модели «ценность/энергия/срок».</li>
+        <li><strong>3.</strong> Запустите фокус-цикл и следуйте ритуалу завершения.</li>
+        <li><strong>4.</strong> Завершите день рефлексией и подготовьте запросы на помощь или делегирование.</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    Прототип задуман как точка входа в экосистему персональных стратегий. Никакие данные не отправляются на сервер.
+  </footer>
+
+  <script>
+    const sliders = [
+      { id: 'energy', label: 'energyValue' },
+      { id: 'mood', label: 'moodValue' },
+      { id: 'focus', label: 'focusValue' },
+    ];
+
+    sliders.forEach(({ id, label }) => {
+      const input = document.getElementById(id);
+      const valueLabel = document.getElementById(label);
+      input.addEventListener('input', () => {
+        valueLabel.textContent = input.value;
+      });
+    });
+
+    const stateRecommendation = document.getElementById('stateRecommendation');
+    const recoveryPlan = document.getElementById('recoveryPlan');
+    document.getElementById('refreshState').addEventListener('click', () => {
+      const energy = Number(document.getElementById('energy').value);
+      const mood = Number(document.getElementById('mood').value);
+      const focus = Number(document.getElementById('focus').value);
+
+      const average = (energy + mood + focus) / 3;
+      let mode;
+      if (average >= 7) mode = 'peak';
+      else if (average >= 5) mode = 'steady';
+      else if (average >= 3) mode = 'fragile';
+      else mode = 'rest';
+
+      const recommendations = {
+        peak:
+          'Вы в пиковой форме: выделите 90–120 минут на задачу №1. Отключите уведомления, поставьте амбициозную цель и завершите микроцикл демонстрацией результата.',
+        steady:
+          'Стабильное состояние: планируйте чередование 45-минутных блоков фокусировки и коротких активных пауз. Прогрессируйте по задачам 1 → 2 → 3.',
+        fragile:
+          'Низкий ресурс: выберите одну компактную задачу (≤30 минут) с высоким коэффициентом радости, затем восстановитесь. Минимизируйте отвлекающие факторы.',
+        rest:
+          'Вы на грани истощения. Перенесите сложные задачи, предупредите команду. Приоритет: сон, гидратация, прогулка на свежем воздухе, дыхание 4-7-8.',
+      };
+
+      const recovery = {
+        peak:
+          '<strong>5 мин:</strong> дыхание «куб» + чашка воды. <br/><strong>15 мин:</strong> растяжка + запись инсайтов. <br/><strong>30 мин:</strong> интервальная ходьба и план следующего броска.',
+        steady:
+          '<strong>5 мин:</strong> дыхание 4-4-6. <br/><strong>15 мин:</strong> активная пауза с суставной гимнастикой. <br/><strong>30 мин:</strong> mindful-прогулка без телефона.',
+        fragile:
+          '<strong>5 мин:</strong> техника «2 глубоких вдоха + длинный выдох». <br/><strong>15 мин:</strong> перекус с белком. <br/><strong>30 мин:</strong> power-nap (20 мин) + свет.',
+        rest:
+          '<strong>5 мин:</strong> отключите экраны. <br/><strong>15 мин:</strong> связь с близким человеком. <br/><strong>30 мин:</strong> сон/медитация, после — лёгкая еда и вода.',
+      };
+
+      stateRecommendation.innerHTML = recommendations[mode];
+      recoveryPlan.innerHTML = recovery[mode];
+    });
+
+    const tasks = [];
+    const taskForm = document.getElementById('taskForm');
+    const taskTableBody = document.querySelector('#taskTable tbody');
+    const portfolioAdvice = document.getElementById('portfolioAdvice');
+
+    function formatDate(dateString) {
+      if (!dateString) return '—';
+      const date = new Date(dateString);
+      if (Number.isNaN(date.getTime())) return '—';
+      return date.toLocaleString(undefined, {
+        day: '2-digit',
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    }
+
+    function computePriority(task) {
+      const impact = task.impact / 10;
+      const urgency = task.urgency / 10;
+      const joy = task.joy / 10;
+      const effort = task.effort / 10;
+
+      const valueScore = 0.45 * impact + 0.35 * urgency + 0.2 * joy;
+      const effortPenalty = 0.35 * effort;
+
+      let deadlineBoost = 0;
+      if (task.deadline) {
+        const now = new Date();
+        const deadline = new Date(task.deadline);
+        const hours = (deadline - now) / 36e5;
+        if (hours <= 0) deadlineBoost = 0.25;
+        else if (hours <= 6) deadlineBoost = 0.2;
+        else if (hours <= 24) deadlineBoost = 0.15;
+        else if (hours <= 72) deadlineBoost = 0.08;
+      }
+
+      const score = Math.max(0, Math.min(1, valueScore - effortPenalty + deadlineBoost));
+      return Number((score * 100).toFixed(1));
+    }
+
+    function recommendationFromScore(score, joy, effort) {
+      if (score >= 75) return 'Сделать немедленно в глубоком фокусе';
+      if (score >= 60) return 'Запланировать на ближайший цикл';
+      if (score >= 45) return joy >= effort ? 'Превратить в быстрый прогресс-спринт' : 'Делегировать часть объёма';
+      return 'Отложить, объединить или делегировать';
+    }
+
+    function updatePortfolioAdvice() {
+      if (!tasks.length) {
+        portfolioAdvice.innerHTML = 'Добавьте хотя бы одну задачу, чтобы увидеть стратегию выполнения.';
+        return;
+      }
+
+      const avgScore = tasks.reduce((sum, t) => sum + t.priority, 0) / tasks.length;
+      const joyfulCount = tasks.filter((t) => t.joy >= 7).length;
+      const urgentCount = tasks.filter((t) => t.urgency >= 8).length;
+      const recommendation = [];
+
+      if (avgScore >= 70) recommendation.push('Портфель сбалансирован, можно смело двигаться по списку сверху вниз.');
+      else recommendation.push('Средний приоритет ниже 70: добавьте задачу с высокой ценностью или пересоберите требования.');
+
+      if (joyfulCount === 0) recommendation.push('Добавьте хотя бы одну задачу с высоким интересом, чтобы поддержать мотивацию.');
+      if (urgentCount > 2) recommendation.push('У вас более двух критически срочных задач: подумайте об эскалации или распределении нагрузки.');
+
+      portfolioAdvice.innerHTML = recommendation.join(' ');
+    }
+
+    taskForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const task = {
+        id: crypto.randomUUID(),
+        name: document.getElementById('taskName').value.trim(),
+        outcome: document.getElementById('taskOutcome').value.trim(),
+        deadline: document.getElementById('taskDeadline').value,
+        impact: Number(document.getElementById('impact').value),
+        urgency: Number(document.getElementById('urgency').value),
+        effort: Number(document.getElementById('effort').value),
+        joy: Number(document.getElementById('joy').value),
+      };
+
+      task.priority = computePriority(task);
+      task.recommendation = recommendationFromScore(task.priority, task.joy, task.effort);
+
+      tasks.push(task);
+      tasks.sort((a, b) => b.priority - a.priority);
+      renderTasks();
+      updatePortfolioAdvice();
+      taskForm.reset();
+    });
+
+    function renderTasks() {
+      taskTableBody.innerHTML = tasks
+        .map(
+          (task) => `
+          <tr>
+            <td>
+              <strong>${task.name}</strong><br/>
+              <span class="pill">Влияние: ${task.impact}</span>
+              <span class="pill">Срочность: ${task.urgency}</span>
+              <span class="pill">Энергозатраты: ${task.effort}</span>
+              <span class="pill">Радость: ${task.joy}</span>
+            </td>
+            <td>${task.outcome}</td>
+            <td>${formatDate(task.deadline)}</td>
+            <td><span class="badge">${task.priority} / 100</span></td>
+            <td>${task.recommendation}</td>
+          </tr>`
+        )
+        .join('');
+    }
+
+    // Фокус-таймер
+    let timerInterval;
+    document.getElementById('startTimer').addEventListener('click', () => {
+      const minutes = Number(document.getElementById('timerMinutes').value) || 25;
+      const endTime = Date.now() + minutes * 60 * 1000;
+      clearInterval(timerInterval);
+      updateTimer(endTime);
+      timerInterval = setInterval(() => updateTimer(endTime), 1000);
+      document.getElementById('timerGuidance').innerHTML = `
+        <strong>Вход:</strong> Сформулируйте намерение, закройте все окна, установите режим «не беспокоить».<br/>
+        <strong>Выход:</strong> По завершении отметьте прогресс, сделайте дыхание 3×(вдох 4с + выдох 6с), обновите список задач и выберите следующее действие.
+      `;
+      document.getElementById('qualityPulse').innerHTML = `
+        <strong>После цикла:</strong> Спросите себя «Что получилось? Что улучшить? Что отпраздновать?» и запишите одну микро-победу.
+      `;
+    });
+
+    document.getElementById('stopTimer').addEventListener('click', () => {
+      clearInterval(timerInterval);
+      document.getElementById('timerDisplay').textContent = '00:00';
+      document.getElementById('timerGuidance').textContent = 'Таймер остановлен. Сделайте мягкое растяжение и зафиксируйте идею, с которой хотите продолжить.';
+    });
+
+    function updateTimer(endTime) {
+      const now = Date.now();
+      const diff = Math.max(0, Math.round((endTime - now) / 1000));
+      const minutes = String(Math.floor(diff / 60)).padStart(2, '0');
+      const seconds = String(diff % 60).padStart(2, '0');
+      document.getElementById('timerDisplay').textContent = `${minutes}:${seconds}`;
+      if (diff <= 0) {
+        clearInterval(timerInterval);
+        document.getElementById('timerGuidance').innerHTML = '
+          Цикл завершён. Сделайте паузу 5 минут, отметьте выполненное и решите, повторять ли цикл или перейти к восстановлению.
+        ';
+      }
+    }
+  </script>
+</body>
+</html>
