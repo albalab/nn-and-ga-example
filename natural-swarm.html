@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sky Murmuration</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at center, #0f1c30 0%, #02060f 55%, #00040a 100%);
+      color: #f3f6ff;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      place-items: center;
+      overflow: hidden;
+      background: inherit;
+    }
+
+    header {
+      text-align: center;
+      padding: 2rem 1.5rem 1rem;
+      max-width: 720px;
+    }
+
+    h1 {
+      margin: 0;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      font-size: clamp(1.75rem, 2vw + 1.5rem, 3rem);
+      text-transform: uppercase;
+    }
+
+    p {
+      margin: 0.75rem auto 0;
+      line-height: 1.5;
+      opacity: 0.78;
+      font-size: clamp(0.95rem, 1vw + 0.8rem, 1.1rem);
+    }
+
+    canvas {
+      width: min(100vw, 1100px);
+      max-width: 95vw;
+      aspect-ratio: 16/9;
+      border-radius: 1.5rem;
+      box-shadow: 0 25px 90px rgba(0, 15, 40, 0.85);
+      border: 1px solid rgba(110, 155, 255, 0.2);
+      background: radial-gradient(circle at 70% 30%, rgba(40, 80, 120, 0.3), transparent 55%),
+                  radial-gradient(circle at 15% 65%, rgba(30, 50, 110, 0.35), transparent 60%),
+                  #020615;
+      cursor: default;
+    }
+
+    footer {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      opacity: 0.5;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Sky Murmuration</h1>
+    <p>
+      Самоорганизующееся поведение стай видно в том, как каждый виртуальный скворец следит за тремя простыми правилами:
+      держаться вместе, избегать столкновений и выравнивать скорость. Без дирижёра возникает плавный танец природы.
+    </p>
+  </header>
+  <canvas id="murmuration" width="1200" height="675" aria-label="Boids flock simulation"></canvas>
+  <footer>3 правила · бесконечное движение</footer>
+
+  <script>
+    const canvas = document.getElementById('murmuration');
+    const ctx = canvas.getContext('2d');
+    const BOID_COUNT = 150;
+    const MAX_SPEED = 2.8;
+    const VIEW_DISTANCE = 85;
+    const SEPARATION_DISTANCE = 24;
+
+    const boids = Array.from({ length: BOID_COUNT }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      vx: (Math.random() - 0.5) * MAX_SPEED,
+      vy: (Math.random() - 0.5) * MAX_SPEED,
+    }));
+
+    function limitSpeed(boid) {
+      const speed = Math.hypot(boid.vx, boid.vy);
+      if (speed > MAX_SPEED) {
+        boid.vx = (boid.vx / speed) * MAX_SPEED;
+        boid.vy = (boid.vy / speed) * MAX_SPEED;
+      }
+    }
+
+    function wrapPosition(boid) {
+      if (boid.x < -20) boid.x = canvas.width + 20;
+      if (boid.y < -20) boid.y = canvas.height + 20;
+      if (boid.x > canvas.width + 20) boid.x = -20;
+      if (boid.y > canvas.height + 20) boid.y = -20;
+    }
+
+    function updateBoids() {
+      for (let i = 0; i < BOID_COUNT; i++) {
+        let centerX = 0, centerY = 0;
+        let avgVX = 0, avgVY = 0;
+        let separationX = 0, separationY = 0;
+        let neighbors = 0;
+
+        const boid = boids[i];
+
+        for (let j = 0; j < BOID_COUNT; j++) {
+          if (i === j) continue;
+          const other = boids[j];
+          const dx = other.x - boid.x;
+          const dy = other.y - boid.y;
+          const distance = Math.hypot(dx, dy);
+
+          if (distance < VIEW_DISTANCE) {
+            centerX += other.x;
+            centerY += other.y;
+            avgVX += other.vx;
+            avgVY += other.vy;
+            neighbors++;
+
+            if (distance < SEPARATION_DISTANCE) {
+              separationX -= dx;
+              separationY -= dy;
+            }
+          }
+        }
+
+        if (neighbors > 0) {
+          centerX /= neighbors;
+          centerY /= neighbors;
+          avgVX /= neighbors;
+          avgVY /= neighbors;
+
+          boid.vx += (centerX - boid.x) * 0.0025;
+          boid.vy += (centerY - boid.y) * 0.0025;
+
+          boid.vx += (avgVX - boid.vx) * 0.03;
+          boid.vy += (avgVY - boid.vy) * 0.03;
+        }
+
+        boid.vx += separationX * 0.03;
+        boid.vy += separationY * 0.03;
+
+        const target = { x: canvas.width * 0.6, y: canvas.height * 0.4 };
+        boid.vx += (target.x - boid.x) * 0.0005;
+        boid.vy += (target.y - boid.y) * 0.0005;
+
+        limitSpeed(boid);
+        boid.x += boid.vx;
+        boid.y += boid.vy;
+        wrapPosition(boid);
+      }
+    }
+
+    function drawBoids() {
+      ctx.fillStyle = 'rgba(3, 10, 28, 0.35)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      for (const boid of boids) {
+        const angle = Math.atan2(boid.vy, boid.vx);
+        ctx.save();
+        ctx.translate(boid.x, boid.y);
+        ctx.rotate(angle);
+        const gradient = ctx.createLinearGradient(-12, 0, 12, 0);
+        gradient.addColorStop(0, 'rgba(120, 160, 255, 0.08)');
+        gradient.addColorStop(0.6, 'rgba(170, 210, 255, 0.7)');
+        gradient.addColorStop(1, 'rgba(240, 250, 255, 0.95)');
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.moveTo(14, 0);
+        ctx.lineTo(-12, 6);
+        ctx.lineTo(-10, 0);
+        ctx.lineTo(-12, -6);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    function animate() {
+      updateBoids();
+      drawBoids();
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    window.addEventListener('resize', () => {
+      const ratio = canvas.width / canvas.height;
+      const newWidth = Math.min(window.innerWidth * 0.95, 1100);
+      canvas.width = newWidth;
+      canvas.height = newWidth / ratio;
+    });
+  </script>
+</body>
+</html>
